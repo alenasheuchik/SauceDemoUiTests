@@ -17,12 +17,10 @@ namespace SauceDemo.Tests
         {
             Driver = new ChromeDriver();
             Driver.Manage().Window.Maximize();
-
             LoginPage = new LoginPage(Driver);
             ProductsPage = new ProductsPage(Driver);
             CartPage = new CartPage(Driver);
         }
-
         [TearDown]
         public void TearDown()
         {

@@ -11,8 +11,8 @@ namespace SauceDemo.Tests.Data
         {
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = Path.Combine(baseDir, "Resources", "users.csv");
-
             var lines = File.ReadAllLines(filePath);
+
             foreach (var line in lines)
             {
                 var parts = line.Split(';');
@@ -21,7 +21,7 @@ namespace SauceDemo.Tests.Data
                 string result = parts[2];
 
                 yield return new TestCaseData(username, password, result)
-                    .SetName($"Login_{username}_{result}");
+                .SetName($"Login_{username}_{result}");
             }
         }
     }

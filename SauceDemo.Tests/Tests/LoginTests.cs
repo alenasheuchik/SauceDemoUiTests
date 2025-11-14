@@ -26,7 +26,7 @@ namespace SauceDemo.Tests
                 Assert.That(
                     LoginPage.IsErrorDisplayed(),
                     Is.True,
-                    $"Юзер {username}: ожидали ошибку, но ошибки нет."
+                    $"Юзер {username}: ожидала ошибку, но ошибки нет."
                 );
             }
         }
