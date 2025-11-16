@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
+using SauceDemo.Pages;
 using SauceDemo.Tests.Data;
 
 namespace SauceDemo.Tests
@@ -7,27 +7,24 @@ namespace SauceDemo.Tests
     public class LoginTests : BaseTest
     {
         [Test]
-        [TestCaseSource(typeof(UsersCsvData), nameof(UsersCsvData.GetUsers))]
+        [TestCaseSource(typeof(UsersCsvDataReader), nameof(UsersCsvDataReader.GetUsers))]
         public void LoginUser_Test(string username, string password, string result)
         {
-            LoginPage.Open();
-            LoginPage.Login(username, password);
+            var loginPage = new LoginPage(Driver);
+            var productsPage = new ProductsPage(Driver);
+
+            loginPage.Open();
+            loginPage.Login(username, password);
 
             if (result == "success")
             {
-                Assert.That(
-                    ProductsPage.IsOpened(),
-                    Is.True,
-                    $"Юзер {username}: страница продуктов не открылась."
-                );
+                Assert.That(productsPage.IsOpened(), Is.True,
+                    "Ожидалось открытие страницы продуктов, но она не открылась.");
             }
             else
             {
-                Assert.That(
-                    LoginPage.IsErrorDisplayed(),
-                    Is.True,
-                    $"Юзер {username}: ожидала ошибку, но ошибки нет."
-                );
+                Assert.That(loginPage.IsErrorDisplayed(), Is.True,
+                    "Ожидалась ошибка, но ошибки нет.");
             }
         }
     }

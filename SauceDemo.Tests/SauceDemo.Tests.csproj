@@ -147,8 +147,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
-    <Compile Include="Data\ProductsCsvData.cs" />
-    <Compile Include="Data\UsersCsvData.cs" />
+    <Compile Include="Data\ProductsCsvDataReader.cs" />
+    <Compile Include="Data\UsersCsvDataReader.cs" />
     <Compile Include="Pages\CartPage.cs" />
     <Compile Include="Pages\LoginPage.cs" />
     <Compile Include="Pages\ProductsPage.cs" />
