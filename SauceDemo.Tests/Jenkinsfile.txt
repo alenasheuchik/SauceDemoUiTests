@@ -1,0 +1,21 @@
+﻿pipeline {
+    agent any
+
+    stages {
+        stage('Run tests') {
+            steps {
+                bat 'dotnet test SauceDemo.Tests\\SauceDemo.Tests.csproj'
+            }
+        }
+    }
+
+    post {
+        always {
+            allure(
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'SauceDemo.Tests/bin/Debug/allure-results']]
+            )
+        }
+    }
+}
