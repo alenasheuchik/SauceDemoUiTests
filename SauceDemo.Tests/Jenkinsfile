@@ -1,20 +1,24 @@
-﻿pipeline {
+pipeline {
     agent any
 
     stages {
         stage('Run tests') {
             steps {
-                bat 'dotnet test SauceDemo.Tests\\SauceDemo.Tests.csproj'
+                // заходим в папку проекта и запускаем тесты
+                dir('SauceDemo.Tests') {
+                    bat 'dotnet test SauceDemo.Tests.csproj'
+                }
             }
         }
     }
 
     post {
         always {
+            // собираем результаты Allure
             allure(
                 includeProperties: false,
                 jdk: '',
-                results: [[path: 'SauceDemo.Tests/bin/Debug/allure-results']]
+                results: [[path: 'SauceDemo.Tests/allure-results']]
             )
         }
     }

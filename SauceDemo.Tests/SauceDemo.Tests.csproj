@@ -177,8 +177,8 @@
     </None>
     <None Include="allureConfig.Template.json" />
     <None Include="app.config" />
+    <None Include="Jenkinsfile" />
     <None Include="packages.config" />
-    <Content Include="Jenkinsfile.txt" />
     <Content Include="Resources\products.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
