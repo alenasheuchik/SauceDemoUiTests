@@ -1,5 +1,4 @@
 ﻿using OpenQA.Selenium;
-
 namespace SauceDemo.Pages
 {
     public class ProductsPage
@@ -10,6 +9,8 @@ namespace SauceDemo.Pages
         {
             _driver = driver;
         }
+        private IWebElement CartBadge => _driver.FindElement(By.ClassName("shopping_cart_badge"));
+        private IWebElement CartLink => _driver.FindElement(By.Id("shopping_cart_container"));
 
         public bool IsOpened()
         {
@@ -22,18 +23,17 @@ namespace SauceDemo.Pages
                 $"//div[@class='inventory_item']//div[contains(@class,'inventory_item_name') and contains(text(),'{productName}')]"));
 
             var itemContainer = nameElement.FindElement(By.XPath("./ancestor::div[@class='inventory_item']"));
-
             itemContainer.FindElement(By.XPath(".//button")).Click();
         }
 
         public string GetCartBadgeCount()
         {
-            return _driver.FindElement(By.ClassName("shopping_cart_badge")).Text;
+            return CartBadge.Text;
         }
 
         public void OpenCart()
         {
-            _driver.FindElement(By.Id("shopping_cart_container")).Click();
+            CartLink.Click();
         }
 
         public bool IsProductVisibleOnProductsPage(string productName)
