@@ -11,7 +11,7 @@ pipeline {
         stage('Restore') {
             steps {
                 dir('SauceDemo.Tests') {
-                    bat 'dotnet restore'
+                    bat 'nuget.exe restore SauceDemo.Tests.csproj'
                 }
             }
         }
