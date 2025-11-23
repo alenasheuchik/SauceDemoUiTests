@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using System.Collections.Generic;
+using OpenQA.Selenium;
 
 namespace SauceDemo.Pages
 {
@@ -6,49 +7,80 @@ namespace SauceDemo.Pages
     {
         private readonly IWebDriver _driver;
 
+        private const string InventoryPageUrlPart = "inventory.html";
+
         public ProductsPage(IWebDriver driver)
         {
             _driver = driver;
         }
+        private IWebElement CartBadge =>
+            _driver.FindElement(By.ClassName("shopping_cart_badge"));
 
-        // Проверяем, что открылась страница с товарами
+        private IWebElement CartLink =>
+            _driver.FindElement(By.Id("shopping_cart_container"));
+
+        private readonly By inventoryItemLocator =
+            By.ClassName("inventory_item");
+
+        private readonly By itemNameLocator =
+            By.ClassName("inventory_item_name");
+
+        private readonly By addToCartButtonLocator =
+            By.TagName("button");
+
+        private IReadOnlyCollection<IWebElement> InventoryItems =>
+            _driver.FindElements(inventoryItemLocator);
+
+        private IWebElement GetInventoryItemByName(string productName)
+        {
+            foreach (var item in InventoryItems)
+            {
+                var nameElement = item.FindElement(itemNameLocator);
+
+                if (nameElement.Text == productName)
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
         public bool IsOpened()
         {
-            return _driver.Url.Contains("inventory.html");
+            return _driver.Url.Contains(InventoryPageUrlPart);
         }
-
-        // Добавляем товар в корзину по имени
         public void AddProductToCart(string productName)
         {
-            // Находим элемент с названием товара (допускаем пробелы/переносы строк)
-            var nameElement = _driver.FindElement(By.XPath(
-                $"//div[@class='inventory_item']//div[contains(@class,'inventory_item_name') and contains(text(),'{productName}')]"));
+            var item = GetInventoryItemByName(productName);
 
-            // Поднимаемся к карточке товара
-            var itemContainer = nameElement.FindElement(By.XPath("./ancestor::div[@class='inventory_item']"));
+            if (item == null)
+            {
+                return;
+            }
 
-            // Находим кнопку и кликаем её
-            itemContainer.FindElement(By.XPath(".//button")).Click();
+            var button = item.FindElement(addToCartButtonLocator);
+            button.Click();
         }
-
-        // Получаем цифру на бейдже корзины
         public string GetCartBadgeCount()
         {
-            return _driver.FindElement(By.ClassName("shopping_cart_badge")).Text;
+            try
+            {
+                return CartBadge.Text;
+            }
+            catch (NoSuchElementException)
+            {
+                return "0";
+            }
         }
-
-        // Переходим в корзину
         public void OpenCart()
         {
-            _driver.FindElement(By.Id("shopping_cart_container")).Click();
+            CartLink.Click();
         }
-
-        // Проверяем, что товар виден на странице продуктов
         public bool IsProductVisibleOnProductsPage(string productName)
         {
-            return _driver.FindElements(By.XPath(
-                $"//div[@class='inventory_item']//div[contains(@class,'inventory_item_name') and contains(text(),'{productName}')]"))
-                .Count > 0;
+            var item = GetInventoryItemByName(productName);
+
+            return item != null;
         }
     }
 }

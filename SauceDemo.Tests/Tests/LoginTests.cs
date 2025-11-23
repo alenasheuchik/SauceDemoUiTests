@@ -1,33 +1,37 @@
 ﻿using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
+using SauceDemo.Pages;
 using SauceDemo.Tests.Data;
 
 namespace SauceDemo.Tests
 {
     public class LoginTests : BaseTest
     {
+        private LoginPage _loginPage;
+        private ProductsPage _productsPage;
+
+        [SetUp]
+        public void SetUpPages()
+        {
+            _loginPage = new LoginPage(Driver);
+            _productsPage = new ProductsPage(Driver);
+        }
+
         [Test]
-        [TestCaseSource(typeof(UsersCsvData), nameof(UsersCsvData.GetUsers))]
+        [TestCaseSource(typeof(UsersCsvDataReader), nameof(UsersCsvDataReader.GetUsers))]
         public void LoginUser_Test(string username, string password, string result)
         {
-            LoginPage.Open();
-            LoginPage.Login(username, password);
+            _loginPage.Open();
+            _loginPage.Login(username, password);
 
             if (result == "success")
             {
-                Assert.That(
-                    ProductsPage.IsOpened(),
-                    Is.True,
-                    $"Юзер {username}: страница продуктов не открылась."
-                );
+                Assert.That(_productsPage.IsOpened(), Is.True,
+                    "Ожидалось открытие страницы продуктов, но она не открылась.");
             }
             else
             {
-                Assert.That(
-                    LoginPage.IsErrorDisplayed(),
-                    Is.True,
-                    $"Юзер {username}: ожидали ошибку, но ошибки нет."
-                );
+                Assert.That(_loginPage.IsErrorDisplayed(), Is.True,
+                    "Ожидалась ошибка, но ошибки нет.");
             }
         }
     }

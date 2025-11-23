@@ -1,66 +1,53 @@
 ﻿using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
+using SauceDemo.Pages;
 using SauceDemo.Tests.Data;
 
 namespace SauceDemo.Tests
 {
     public class CartTests : BaseTest
     {
+        private LoginPage _loginPage;
+        private ProductsPage _productsPage;
+        private CartPage _cartPage;
+
+        [SetUp]
+        public void SetUpPages()
+        {
+            _loginPage = new LoginPage(Driver);
+            _productsPage = new ProductsPage(Driver);
+            _cartPage = new CartPage(Driver);
+        }
+
         [Test]
-        [TestCaseSource(typeof(ProductsCsvData), nameof(ProductsCsvData.GetProducts))]
+        [TestCaseSource(typeof(ProductsCsvDataReader), nameof(ProductsCsvDataReader.GetProducts))]
         public void AddProductToCart_Test(string productName, string expectedPrice)
         {
-            // 1 - Логин
-            LoginPage.Open();
-            LoginPage.Login("standard_user", "secret_sauce");
+            _loginPage.Open();
+            _loginPage.Login("standard_user", "secret_sauce");
 
-            // 2 - Проверка, что открыта страница с продуктами
-            Assert.That(
-                ProductsPage.IsOpened(),
-                Is.True,
-                "Страница продуктов не открылась после логина"
-            );
+            Assert.That(_productsPage.IsOpened(), Is.True,
+                "Ожидалось, что откроется страница с продуктами.");
 
-            // 3 - Добавляем продукт
-            ProductsPage.AddProductToCart(productName);
+            _productsPage.AddProductToCart(productName);
 
-            // 4 - Проверяем цифру на корзине
-            Assert.That(
-                ProductsPage.GetCartBadgeCount(),
-                Is.EqualTo("1"),
-                "Ожидали 1 товар в корзине"
-            );
+            Assert.That(_productsPage.GetCartBadgeCount(), Is.EqualTo("1"),
+                "Ожидался один товар в корзине.");
 
-            // 5 - Переходим в корзину
-            ProductsPage.OpenCart();
+            _productsPage.OpenCart();
 
-            // 6,7,8 - софт-ассерты
             Assert.Multiple(() =>
             {
-                // 6 - открыта страница корзины
-                Assert.That(
-                    CartPage.IsOpened(),
-                    Is.True,
-                    "Страница корзины не открылась"
-                );
+                Assert.That(_cartPage.IsOpened(), Is.True,
+                    "Ожидалось открытие страницы корзины.");
 
-                // 7 - выбранный продукт в корзине
-                Assert.That(
-                    CartPage.IsProductInCart(productName),
-                    Is.True,
-                    $"Товар '{productName}' не найден в корзине"
-                );
+                Assert.That(_cartPage.IsProductInCart(productName), Is.True,
+                    $"Товар '{productName}' не найден в корзине.");
 
-                // 8 - цена продукта
-                Assert.That(
-                    CartPage.GetProductPrice(productName),
-                    Is.EqualTo(expectedPrice),
-                    $"Неверная цена для товара '{productName}'"
-                );
+                Assert.That(_cartPage.GetProductPrice(productName), Is.EqualTo(expectedPrice),
+                    $"Неверная цена для товара '{productName}'.");
             });
 
-            // 9 - Убираем продукт
-            CartPage.RemoveProduct(productName);
+            _cartPage.RemoveProduct(productName);
         }
     }
 }
